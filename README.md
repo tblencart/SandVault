@@ -1,66 +1,75 @@
-# SandVault - Prototype Validation 🔋
+# 🔋 SandVault - Technical Documentation & Firmware
 
-This repository contains the physical validation firmware and technical documentation for the SandVault prototype I developed during the AlgoFest Hackathon 2026.
+Welcome to the hardware and firmware repository for **SandVault**. 
 
-I successfully validated three critical fronts: Thermodynamic Engineering, Firmware Telemetry, and Predictive Economic Logic.
-
----
-
-## 🛠️ 1. Physical Prototype & System Architecture
-
-I designed the prototype to demonstrate real-world heat transfer from a solid storage medium (sand) to a liquid exchanger (water) for residential heating.
-
-### Material Breakdown (BOM)
-* **Storage Unit:** Two nested metal pots with high-density Rock Wool insulation.
-* **Medium:** 13 kg of dry sand with an embedded Copper-to-Silicone heat exchanger.
-* **Heating System:**
-    * 2x 26W Soldering-tip resistors (230V AC).
-    * 1x 50W Submerged resistor (12V DC).
-* **Fluid Dynamics:** 1x 12V Water Pump for active circulation.
-* **Control Hub:** ESP32 Microcontroller, 2x DS18B20 Sensors, and a 230V-to-12V Transformer.
-
-### 🔌 Circuitry & Power Distribution
-I powered the system using two separate lines to manage different power requirements:
-* **High-Voltage AC (230V):** Powered the core resistors and the transformer.
-* **Low-Voltage DC (12V):** Fed from the transformer to power the pump and auxiliary resistor.
-* **Manual Control Strategy:** Due to relay communication challenges during assembly, I pivoted to a "Manual Switching Strategy". I manually toggled the 12V pump and resistors by connecting/disconnecting jumper wires on the breadboard and cycling the 230V sockets. This allowed me to successfully record the thermal rise while manually managing electrical safety.
+This repository is strictly dedicated to the **Proof of Concept (PoC) physical prototype** developed during the AlgoFest Hackathon 2026. Its purpose is to physically validate the thermodynamic heat transfer ($Q = mc\Delta T$) from a solid medium (sand) to a liquid loop (water) using an ESP32 for telemetry.
 
 ---
 
-## 💻 2. Firmware Logic (ESP32)
+## 🛠️ 1. Bill of Materials (BOM)
 
-The `sensor_plotter.ino` file is the diagnostic heart of my prototype, providing the telemetry I required to prove the thermodynamic formulas.
+To replicate this physical prototype, you will need the following components:
 
-### Technical Implementation:
-* **Protocol:** I used the 1-Wire bus to read multiple DS18B20 sensors through GPIO 5.
-* **Hardware Fix:** I integrated a 4.7kΩ pull-up resistor between Data and 3.3V to neutralize electromagnetic interference (EMI) from the nearby 230V heating elements.
-* **Telemetry:** The code outputs a formatted string (Key:Value) at 115200 baud, enabling real-time visualization via the Arduino Serial Plotter.
-* **Validation:** This firmware successfully recorded the water loop rising from 20°C to 45°C, proving the efficiency of the sand-to-copper heat transfer.
+**Thermal Core & Fluid Dynamics:**
+* 2x Nested metal pots (inner and outer shell).
+* High-density Rock Wool (for insulation between pots).
+* 13 kg of dry sand (thermal storage medium).
+* Copper & Silicone tubing (for the internal heat exchanger loop).
+* 1x External water container (for the water loop inlet/outlet).
+* 1x 12V Water Pump.
+
+**Microcontroller & Telemetry:**
+* 1x ESP32 Microcontroller.
+* 1x USB-C Data Cable (to flash the ESP32 and read serial data on a computer).
+* 2x DS18B20 1-Wire Temperature Sensors.
+* 1x 4.7kΩ Resistor (Crucial: acts as a pull-up resistor for the 1-Wire bus).
+* 1x Breadboard.
+* Assorted Jumper Wires (Male/Male, Male/Female, Female/Female).
+
+**Heating & Power Distribution:**
+* 2x 26W Soldering-tip resistors (230V AC - embedded directly in the sand).
+* 1x 50W Submerged resistor (12V DC).
+* 1x 230V-to-12V Transformer.
+* PVC power cables with standard 230V wall plugs.
+* Multi-strand electrical cable (FVV type) for custom junctions.
+* Electrical insulating tape.
+
+**Control & Safety Architecture:**
+* *Note:* The following components were installed in the circuit architecture but were manually bypassed during the final PoC test runs to guarantee data logging amidst relay communication bugs. Any future iteration should actively utilize these:
+* 3x Relay Modules (intended for ESP32 automated switching of the pump and heating elements).
+* Blade and Glass Fuses + respective fuse holders (mandatory safety measure when operating 230V AC systems near water loops).
 
 ---
 
-## 🧠 3. Smart Manager: Predictive Logic & Thermodynamics
+## 🔌 2. Wiring & Circuit Architecture
 
-The SandVault "brain" I designed is an energy-arbitrage engine. I validated the system's viability by integrating the physics of heat storage with market volatility.
+Due to the mix of high-voltage and low-voltage components, the system is split into two isolated circuits. 
 
-### 🌡️ The Thermodynamics of Storage
-To calculate the State of Charge (SoC) and autonomy, my algorithm uses:
-**Q = m * c * Delta_T**
+**Low-Voltage Circuit (Telemetry & Fluid Dynamics):**
+* The ESP32 is powered via standard USB-C (5V).
+* **Sensors (DS18B20):**
+  * `VCC` -> `3.3V`
+  * `GND` -> `GND`
+  * `DATA` -> `GPIO 5` *(Note: A 4.7kΩ pull-up resistor MUST bridge DATA and 3.3V to stabilize readings).*
+* The 12V Water Pump and 12V 50W Resistor are powered directly from the 230V-to-12V Transformer.
 
-Where:
-* **m = 13 kg** (Mass of sand).
-* **c = 830 J/kg°C** (Specific heat capacity).
-* **Delta_T = (Sand Temp) - (Target Water Temp).**
-
-Thermal Autonomy (ta) is then calculated as: **ta = Q_available / Power_demand**.
-
-### 📉 Algorithm Decision States:
-
-1. **Critical State (Safety):** If SoC < 10% or autonomy < 2h, I programmed the system to force a grid charge regardless of price to guarantee service.
-2. **Predictive State (OMIE Price Arbitrage):** My algorithm scans 72h weather forecasts. If a solar deficit is predicted, it schedules a charge at **03:00 AM** (statistically the lowest OMIE market price) to lock in low rates.
-3. **Standby State (Efficiency):** When Solar Power > Demand, the grid is bypassed (Grid Power = 0), achieving 100% self-consumption.
+**High-Voltage Circuit (Heating):**
+* The 2x 26W AC resistors are connected directly to the 230V mains. 
+* *Safety Note:* For this hackathon iteration, relays were bypassed. Switching was handled manually to ensure safe operation while logging the thermal rise.
 
 ---
 
-## 🔗 Project Links
-* **Interactive Dashboard (Figma):** [Open SandVault Dashboard](https://www.figma.com/make/xtBx5ii2K2D1QqXKYnANKD/SandVault---Dashboard?fullscreen=1&t=4Nc4OFI8Wy0oCBo6-1)
+## 💻 3. Firmware (`sensor_plotter.ino`)
+
+The provided firmware is designed to capture real-time thermodynamic data and output it in a format readable by the Arduino IDE Serial Plotter.
+
+### How to run it:
+1. Clone this repository.
+2. Open `sensor_plotter.ino` in the Arduino IDE.
+3. Install the required libraries: `OneWire.h` and `DallasTemperature.h`.
+4. Connect the ESP32 via USB-C and select the correct COM port and board (e.g., "DOIT ESP32 DEVKIT V1").
+5. Upload the code.
+6. Open the **Serial Plotter** (Set Baud Rate to `115200`).
+
+### Telemetry Output:
+The code initializes the 1-Wire bus on GPIO 5, locates the two DS18B20 sensors (Core Sand Temp and Water Loop Temp), and prints the data dynamically. This allowed us to successfully record the water loop rising from 20°C to 45°C in roughly three minutes, validating the thermodynamic efficiency of the system.

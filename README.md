@@ -64,3 +64,4 @@ Thermal Autonomy (ta) is then calculated as: **ta = Q_available / Power_demand**
 
 ## 🔗 Project Links
 * **Interactive Dashboard (Figma):** [Open SandVault Dashboard](https://www.figma.com/make/xtBx5ii2K2D1QqXKYnANKD/SandVault---Dashboard?fullscreen=1&t=4Nc4OFI8Wy0oCBo6-1)
+* **Demo Video (YouTube):** [Open SandVault Demo Video]([https://www.figma.com/make/xtBx5ii2K2D1QqXKYnANKD/SandVault---Dashboard?fullscreen=1&t=4Nc4OFI8Wy0oCBo6-1](https://youtu.be/joFL-CHV0dY))

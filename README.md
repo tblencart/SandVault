@@ -13,7 +13,8 @@ I designed the prototype to demonstrate real-world heat transfer from a solid st
 ### Material Breakdown (BOM)
 * **Storage Unit:** Two nested metal pots with high-density Rock Wool insulation.
 * **Medium:** 13 kg of dry sand with an embedded Copper-to-Silicone heat exchanger.
-* **Heating System:** * 2x 26W Soldering-tip resistors (230V AC).
+* **Heating System:**
+    * 2x 26W Soldering-tip resistors (230V AC).
     * 1x 50W Submerged resistor (12V DC).
 * **Fluid Dynamics:** 1x 12V Water Pump for active circulation.
 * **Control Hub:** ESP32 Microcontroller, 2x DS18B20 Sensors, and a 230V-to-12V Transformer.
